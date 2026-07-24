@@ -6,12 +6,13 @@ import { Meme } from '@/lib/meme-types';
 async function fetchFromMemeApi(skip: number, take: number): Promise<Meme[]> {
   try {
     // Using meme-api.com which pulls from Reddit
-    const response = await fetch('https://meme-api.com/gimme/memes/15', {
+    // Fetch more memes to get variety and avoid duplicates
+    const response = await fetch('https://meme-api.com/gimme/memes/30', {
       method: 'GET',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
-      next: { revalidate: 60 }, // Cache for 60 seconds
+      next: { revalidate: 10 }, // Cache for only 10 seconds to get fresher memes
     });
 
     if (!response.ok) {
@@ -19,9 +20,10 @@ async function fetchFromMemeApi(skip: number, take: number): Promise<Meme[]> {
     }
 
     const data = await response.json();
-    const memes: Meme[] = (data.memes || []).map((meme: any, index: number) => {
+    // Use postLink as unique ID (it's the actual Reddit post URL)
+    const memes: Meme[] = (data.memes || []).map((meme: any) => {
       return {
-        id: `${meme.postLink.replace(/\//g, '_')}_${index}`,
+        id: meme.postLink, // Use postLink directly as it's unique
         title: meme.title || 'Untitled Meme',
         url: meme.url,
         thumbnail: meme.preview?.[0] || meme.url,

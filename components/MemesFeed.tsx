@@ -35,15 +35,23 @@ export function MemesFeed() {
         // Fetch more memes to have a pool of fresh ones
         const initialMemes = await fetchMemes(0, 30);
         
+        // Remove duplicates based on ID
+        const uniqueMemes = Array.from(
+          new Map(initialMemes.map(m => [m.id, m])).values()
+        );
+        
         // Store all fetched memes for reference
-        initialMemes.forEach(meme => fetchedMemesRef.current.set(meme.id, meme));
+        uniqueMemes.forEach(meme => fetchedMemesRef.current.set(meme.id, meme));
         
         // Separate unseen and seen memes
-        const unseenMemes = initialMemes.filter(m => !seenMemeIds.has(m.id));
-        const seenMemesList = initialMemes.filter(m => seenMemeIds.has(m.id));
+        const unseenMemes = uniqueMemes.filter(m => !seenMemeIds.has(m.id));
+        const seenMemesList = uniqueMemes.filter(m => seenMemeIds.has(m.id));
+        
+        // Shuffle unseen memes for variety
+        const shuffled = unseenMemes.sort(() => Math.random() - 0.5);
         
         // Prioritize unseen memes, then add seen ones if needed
-        const prioritized = [...unseenMemes.slice(0, 10), ...seenMemesList.slice(0, 5)];
+        const prioritized = [...shuffled.slice(0, 10), ...seenMemesList.slice(0, 5)];
         
         setMemes(prioritized);
         localStorage.setItem('allMemes', JSON.stringify(prioritized));
@@ -65,13 +73,22 @@ export function MemesFeed() {
     try {
       const newMemes = await fetchMemes(memes.length, 20);
       if (newMemes.length > 0) {
+        // Remove duplicates from new batch
+        const uniqueNewMemes = Array.from(
+          new Map(newMemes.map(m => [m.id, m])).values()
+        );
+        
         // Store fetched memes in ref for later use
-        newMemes.forEach(meme => fetchedMemesRef.current.set(meme.id, meme));
+        uniqueNewMemes.forEach(meme => fetchedMemesRef.current.set(meme.id, meme));
         
         setMemes(prev => {
+          // Filter out memes already in the current feed
+          const currentIds = new Set(prev.map(m => m.id));
+          const newUniqueMemes = uniqueNewMemes.filter(m => !currentIds.has(m.id));
+          
           // Separate unseen and seen from new batch
-          const unseenBatch = newMemes.filter(m => !seenMemeIds.has(m.id));
-          const seenBatch = newMemes.filter(m => seenMemeIds.has(m.id));
+          const unseenBatch = newUniqueMemes.filter(m => !seenMemeIds.has(m.id));
+          const seenBatch = newUniqueMemes.filter(m => seenMemeIds.has(m.id));
           
           // Prioritize unseen, fill with seen if needed
           const toAdd = [...unseenBatch, ...seenBatch].slice(0, 15);
