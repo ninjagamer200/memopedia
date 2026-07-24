@@ -6,10 +6,10 @@ import { Meme } from '@/lib/meme-types';
 async function fetchFromMemeApi(skip: number, take: number): Promise<Meme[]> {
   try {
     // Using meme-api.com which pulls from Reddit
-    const response = await fetch('https://meme-api.com/gimme/memes/10', {
+    const response = await fetch('https://meme-api.com/gimme/memes/15', {
       method: 'GET',
       headers: {
-        'User-Agent': 'MemoPedia/1.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
       next: { revalidate: 60 }, // Cache for 60 seconds
     });
@@ -19,16 +19,18 @@ async function fetchFromMemeApi(skip: number, take: number): Promise<Meme[]> {
     }
 
     const data = await response.json();
-    const memes: Meme[] = (data.memes || []).map((meme: any, index: number) => ({
-      id: `${meme.postLink.replace(/\//g, '_')}_${index}`,
-      title: meme.title || 'Untitled Meme',
-      url: meme.url,
-      thumbnail: meme.preview?.[0] || meme.url,
-      type: meme.url.includes('.mp4') || meme.url.includes('.webm') ? 'video' : 'image',
-      source: 'reddit',
-      subreddit: meme.subreddit || 'memes',
-      postLink: meme.postLink,
-    }));
+    const memes: Meme[] = (data.memes || []).map((meme: any, index: number) => {
+      return {
+        id: `${meme.postLink.replace(/\//g, '_')}_${index}`,
+        title: meme.title || 'Untitled Meme',
+        url: meme.url,
+        thumbnail: meme.preview?.[0] || meme.url,
+        type: meme.url.includes('.mp4') || meme.url.includes('.webm') ? 'video' : 'image',
+        source: 'reddit',
+        subreddit: meme.subreddit || 'memes',
+        postLink: meme.postLink,
+      };
+    });
 
     return memes;
   } catch (error) {

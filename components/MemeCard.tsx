@@ -39,13 +39,14 @@ export function MemeCard({ meme, isVisible }: MemeCardProps) {
             crossOrigin="anonymous"
           />
         ) : (
-          <img
-            src={meme.url}
-            alt={meme.title}
-            className="max-w-full max-h-full w-auto h-auto object-contain"
-            onError={() => setMediaError(true)}
-            crossOrigin="anonymous"
-          />
+          <>
+            <img
+              src={`/api/image-proxy?url=${encodeURIComponent(meme.url)}`}
+              alt={meme.title}
+              className="max-w-full max-h-full w-auto h-auto object-contain"
+              onError={() => setMediaError(true)}
+            />
+          </>
         )}
       </div>
 
