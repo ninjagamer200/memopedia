@@ -19,7 +19,7 @@ export function MemeCard({ meme, isVisible }: MemeCardProps) {
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40 z-0" />
 
       {/* Media Container */}
-      <div className="relative w-full h-full flex items-center justify-center z-5">
+      <div className="relative w-full h-full flex items-center justify-center z-0 pointer-events-none">
         {mediaError ? (
           <div className="flex flex-col items-center justify-center gap-4 p-8">
             <div className="text-white text-center">

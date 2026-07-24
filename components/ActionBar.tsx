@@ -63,10 +63,10 @@ export function ActionBar({ memeId, onLikeChange, onFavoriteChange }: ActionBarP
   if (!mounted) return null;
 
   return (
-    <div className="absolute right-4 bottom-20 flex flex-col gap-4 z-10">
+    <div className="absolute right-4 bottom-20 flex flex-col gap-4 z-50 pointer-events-auto">
       <button
         onClick={handleLike}
-        className="flex flex-col items-center gap-1 p-2 rounded-full hover:bg-black/20 transition-colors"
+        className="flex flex-col items-center gap-1 p-3 rounded-full hover:bg-white/10 transition-all cursor-pointer pointer-events-auto active:scale-95"
         aria-label={liked ? 'Unlike' : 'Like'}
       >
         <Heart
@@ -82,7 +82,7 @@ export function ActionBar({ memeId, onLikeChange, onFavoriteChange }: ActionBarP
 
       <button
         onClick={handleFavorite}
-        className="flex flex-col items-center gap-1 p-2 rounded-full hover:bg-black/20 transition-colors"
+        className="flex flex-col items-center gap-1 p-3 rounded-full hover:bg-white/10 transition-all cursor-pointer pointer-events-auto active:scale-95"
         aria-label={favorited ? 'Remove favorite' : 'Add favorite'}
       >
         <Star
@@ -98,7 +98,7 @@ export function ActionBar({ memeId, onLikeChange, onFavoriteChange }: ActionBarP
 
       <button
         onClick={handleShare}
-        className="flex flex-col items-center gap-1 p-2 rounded-full hover:bg-black/20 transition-colors"
+        className="flex flex-col items-center gap-1 p-3 rounded-full hover:bg-white/10 transition-all cursor-pointer pointer-events-auto active:scale-95"
         aria-label="Share"
       >
         <Share2 size={28} className="text-white" />

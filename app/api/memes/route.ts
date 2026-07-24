@@ -6,13 +6,12 @@ import { Meme } from '@/lib/meme-types';
 async function fetchFromMemeApi(skip: number, take: number): Promise<Meme[]> {
   try {
     // Using meme-api.com which pulls from Reddit
-    // Fetch more memes to get variety and avoid duplicates
-    const response = await fetch('https://meme-api.com/gimme/memes/30', {
+    const response = await fetch('https://meme-api.com/gimme/memes/15', {
       method: 'GET',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
-      next: { revalidate: 10 }, // Cache for only 10 seconds to get fresher memes
+      next: { revalidate: 30 }, // Cache for 30 seconds
     });
 
     if (!response.ok) {
