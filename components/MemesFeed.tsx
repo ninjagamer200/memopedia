@@ -11,17 +11,42 @@ export function MemesFeed() {
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [seenMemeIds, setSeenMemeIds] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+  const fetchedMemesRef = useRef<Map<string, Meme>>(new Map());
+
+  // Load seen meme IDs from localStorage on mount
+  useEffect(() => {
+    const seen = localStorage.getItem('seenMemeIds');
+    if (seen) {
+      try {
+        setSeenMemeIds(new Set(JSON.parse(seen)));
+      } catch (error) {
+        console.error('[v0] Error loading seen memes:', error);
+      }
+    }
+  }, []);
 
   // Initial load
   useEffect(() => {
     const loadInitialMemes = async () => {
       try {
-        const initialMemes = await fetchMemes(0, 10);
-        setMemes(initialMemes);
-        // Store all memes in localStorage for the Saved page
-        localStorage.setItem('allMemes', JSON.stringify(initialMemes));
+        // Fetch more memes to have a pool of fresh ones
+        const initialMemes = await fetchMemes(0, 30);
+        
+        // Store all fetched memes for reference
+        initialMemes.forEach(meme => fetchedMemesRef.current.set(meme.id, meme));
+        
+        // Separate unseen and seen memes
+        const unseenMemes = initialMemes.filter(m => !seenMemeIds.has(m.id));
+        const seenMemesList = initialMemes.filter(m => seenMemeIds.has(m.id));
+        
+        // Prioritize unseen memes, then add seen ones if needed
+        const prioritized = [...unseenMemes.slice(0, 10), ...seenMemesList.slice(0, 5)];
+        
+        setMemes(prioritized);
+        localStorage.setItem('allMemes', JSON.stringify(prioritized));
         setLoading(false);
       } catch (error) {
         console.error('[v0] Failed to load initial memes:', error);
@@ -30,7 +55,7 @@ export function MemesFeed() {
     };
 
     loadInitialMemes();
-  }, []);
+  }, [seenMemeIds]);
 
   // Load more memes when near the end
   const loadMoreMemes = useCallback(async () => {
@@ -38,11 +63,20 @@ export function MemesFeed() {
 
     setIsLoadingMore(true);
     try {
-      const newMemes = await fetchMemes(memes.length, 10);
+      const newMemes = await fetchMemes(memes.length, 20);
       if (newMemes.length > 0) {
+        // Store fetched memes in ref for later use
+        newMemes.forEach(meme => fetchedMemesRef.current.set(meme.id, meme));
+        
         setMemes(prev => {
-          const updated = [...prev, ...newMemes];
-          // Store all memes in localStorage for the Saved page
+          // Separate unseen and seen from new batch
+          const unseenBatch = newMemes.filter(m => !seenMemeIds.has(m.id));
+          const seenBatch = newMemes.filter(m => seenMemeIds.has(m.id));
+          
+          // Prioritize unseen, fill with seen if needed
+          const toAdd = [...unseenBatch, ...seenBatch].slice(0, 15);
+          const updated = [...prev, ...toAdd];
+          
           localStorage.setItem('allMemes', JSON.stringify(updated));
           return updated;
         });
@@ -52,34 +86,50 @@ export function MemesFeed() {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [memes.length, isLoadingMore]);
+  }, [memes.length, isLoadingMore, seenMemeIds]);
 
-  // Handle scroll with intersection observer
+  // Handle scroll with intersection observer - mark as seen when scrolling past
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || memes.length === 0) return;
+
+    let lastSeenIndex = -1;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
+          const index = Array.from(container.children).indexOf(entry.target as Element);
+          const meme = memes[index];
+          
           if (entry.isIntersecting) {
-            const index = Array.from(container.children).indexOf(entry.target as Element);
             setCurrentIndex(index);
 
             // Load more when user is near the end
             if (index >= memes.length - 3) {
               loadMoreMemes();
             }
+          } else if (!entry.isIntersecting && meme) {
+            // Mark as seen when no longer visible (scrolled out of view)
+            if (lastSeenIndex < index) {
+              setSeenMemeIds(prev => {
+                const updated = new Set(prev);
+                updated.add(meme.id);
+                // Save to localStorage
+                localStorage.setItem('seenMemeIds', JSON.stringify(Array.from(updated)));
+                return updated;
+              });
+              lastSeenIndex = index;
+            }
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.01 }
     );
 
     Array.from(container.children).forEach(child => observer.observe(child));
 
     return () => observer.disconnect();
-  }, [memes.length, loadMoreMemes]);
+  }, [memes, loadMoreMemes]);
 
   // Keyboard navigation
   useEffect(() => {

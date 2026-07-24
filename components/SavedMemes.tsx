@@ -27,12 +27,8 @@ export function SavedMemes({ onBack }: SavedMemesProps) {
         const allMemes = localStorage.getItem('allMemes') || '[]';
         const memes = JSON.parse(allMemes) as Meme[];
         
-        console.log('[v0] Favorites:', favoriteIds);
-        console.log('[v0] All memes count:', memes.length);
-        
         // Filter to only saved memes
         const filtered = memes.filter(meme => favoriteIds.includes(meme.id));
-        console.log('[v0] Filtered memes:', filtered.length);
         
         setSavedMemes(filtered);
       } catch (error) {
