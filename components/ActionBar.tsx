@@ -36,20 +36,27 @@ export function ActionBar({ memeId, onLikeChange, onFavoriteChange }: ActionBarP
   };
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
+    try {
+      if (navigator.share) {
         await navigator.share({
           title: 'Check out this meme on MemoPedia!',
           text: 'Found an amazing meme on MemoPedia',
           url: window.location.href,
         });
-      } catch (err) {
-        console.log('[v0] Share cancelled or failed');
+      } else {
+        // Desktop fallback: copy current page URL to clipboard
+        const url = window.location.href;
+        await navigator.clipboard.writeText(url);
+        alert('Link copied to clipboard! Share with friends now!');
       }
-    } else {
-      // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+    } catch (err) {
+      // If anything fails, try copying the URL again
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      } catch {
+        alert('Try right-clicking to copy the URL to share!');
+      }
     }
   };
 

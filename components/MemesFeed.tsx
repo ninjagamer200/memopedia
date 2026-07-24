@@ -20,6 +20,8 @@ export function MemesFeed() {
       try {
         const initialMemes = await fetchMemes(0, 10);
         setMemes(initialMemes);
+        // Store all memes in localStorage for the Saved page
+        localStorage.setItem('allMemes', JSON.stringify(initialMemes));
         setLoading(false);
       } catch (error) {
         console.error('[v0] Failed to load initial memes:', error);
@@ -38,7 +40,12 @@ export function MemesFeed() {
     try {
       const newMemes = await fetchMemes(memes.length, 10);
       if (newMemes.length > 0) {
-        setMemes(prev => [...prev, ...newMemes]);
+        setMemes(prev => {
+          const updated = [...prev, ...newMemes];
+          // Store all memes in localStorage for the Saved page
+          localStorage.setItem('allMemes', JSON.stringify(updated));
+          return updated;
+        });
       }
     } catch (error) {
       console.error('[v0] Failed to load more memes:', error);
