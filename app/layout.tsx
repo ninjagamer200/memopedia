@@ -1,4 +1,3 @@
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Footer } from '@/components/Footer'
@@ -31,7 +30,6 @@ export default function RootLayout({
       <body className="antialiased bg-black text-white overflow-hidden">
         {children}
         <Footer />
-        {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
   )
