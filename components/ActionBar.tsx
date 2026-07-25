@@ -39,8 +39,8 @@ export function ActionBar({ memeId, onLikeChange, onFavoriteChange }: ActionBarP
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'Check out this meme on MemoPedia!',
-          text: 'Found an amazing meme on MemoPedia',
+          title: 'Check out this meme onMemeOPedia!',
+          text: 'Found an amazing meme onMemeOPedia',
           url: window.location.href,
         });
       } else {
@@ -71,9 +71,8 @@ export function ActionBar({ memeId, onLikeChange, onFavoriteChange }: ActionBarP
       >
         <Heart
           size={28}
-          className={`transition-all ${
-            liked ? 'fill-red-500 text-red-500' : 'text-white'
-          }`}
+          className={`transition-all ${liked ? 'fill-red-500 text-red-500' : 'text-white'
+            }`}
         />
         <span className="text-xs text-white font-medium">
           {liked ? 'Liked' : 'Like'}
@@ -87,9 +86,8 @@ export function ActionBar({ memeId, onLikeChange, onFavoriteChange }: ActionBarP
       >
         <Star
           size={28}
-          className={`transition-all ${
-            favorited ? 'fill-yellow-400 text-yellow-400' : 'text-white'
-          }`}
+          className={`transition-all ${favorited ? 'fill-yellow-400 text-yellow-400' : 'text-white'
+            }`}
         />
         <span className="text-xs text-white font-medium">
           {favorited ? 'Saved' : 'Save'}
