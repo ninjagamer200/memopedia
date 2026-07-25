@@ -4,9 +4,9 @@ import './globals.css'
 import { Footer } from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'MemoPedia - Browse Unlimited Memes',
-  description: 'MemoPedia is your ultimate destination for endless memes. Scroll through thousands of funny memes just like YouTube Shorts. Like, save, and share your favorite memes!',
-  generator: 'MemoPedia',
+  title: 'MemeOPedia - Browse Unlimited Memes',
+  description: 'MemeOPedia is your ultimate destination for endless memes. Scroll through thousands of funny memes just like YouTube Shorts. Like, save, and share your favorite memes!',
+  generator: 'MemeOPedia',
   icons: {
     icon: '/favicon.png',
   },
