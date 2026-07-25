@@ -161,3 +161,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide v0 built with attribution box */
+[class*="built"],
+[class*="v0"],
+[class*="vercel"],
+div[style*="Built with"],
+button:has-text("Built with") {
+  display: none !important;
+}
