@@ -32,8 +32,8 @@ export function MemesFeed() {
   useEffect(() => {
     const loadInitialMemes = async () => {
       try {
-        // Fetch initial batch of memes
-        const initialMemes = await fetchMemes(0, 15);
+        // Fetch large initial batch of memes
+        const initialMemes = await fetchMemes(0, 50);
         
         // Store fetched memes
         initialMemes.forEach(meme => fetchedMemesRef.current.set(meme.id, meme));
@@ -56,7 +56,7 @@ export function MemesFeed() {
 
     setIsLoadingMore(true);
     try {
-      const newMemes = await fetchMemes(memes.length, 15);
+      const newMemes = await fetchMemes(memes.length, 50);
       if (newMemes.length > 0) {
         newMemes.forEach(meme => fetchedMemesRef.current.set(meme.id, meme));
         
@@ -92,8 +92,8 @@ export function MemesFeed() {
           if (entry.isIntersecting) {
             setCurrentIndex(index);
 
-            // Load more when user is near the end
-            if (index >= memes.length - 3) {
+            // Load more when user is closer to the middle (keeps pool large)
+            if (index >= memes.length - 15) {
               loadMoreMemes();
             }
           } else if (!entry.isIntersecting && meme) {

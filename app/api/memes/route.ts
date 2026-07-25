@@ -5,13 +5,14 @@ import { Meme } from '@/lib/meme-types';
 
 async function fetchFromMemeApi(skip: number, take: number): Promise<Meme[]> {
   try {
-    // Using meme-api.com which pulls from Reddit
-    const response = await fetch('https://meme-api.com/gimme/memes/15', {
+    // Using meme-api.com which pulls from Reddit - each call returns random memes
+    // Fetch a large batch to provide plenty of content
+    const response = await fetch('https://meme-api.com/gimme/memes/50', {
       method: 'GET',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
-      next: { revalidate: 30 }, // Cache for 30 seconds
+      next: { revalidate: 5 }, // Short cache to get fresh memes often
     });
 
     if (!response.ok) {
