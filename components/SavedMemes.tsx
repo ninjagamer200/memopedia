@@ -15,27 +15,27 @@ export function SavedMemes({ onBack }: SavedMemesProps) {
 
   useEffect(() => {
     setMounted(true);
-    
+
     // Delay to ensure localStorage is fully synced
     const timer = setTimeout(() => {
       try {
         // Get saved meme IDs from localStorage (using correct key)
-        const favoritesData = localStorage.getItem('memopedia_favorites') || '{}';
+        const favoritesData = localStorage.getItem('MemeOPedia_favorites') || '{}';
         const favoriteIds = Object.keys(JSON.parse(favoritesData) as Record<string, boolean>);
-        
+
         // Get all memes from localStorage
         const allMemes = localStorage.getItem('allMemes') || '[]';
         const memes = JSON.parse(allMemes) as Meme[];
-        
+
         // Filter to only saved memes
         const filtered = memes.filter(meme => favoriteIds.includes(meme.id));
-        
+
         setSavedMemes(filtered);
       } catch (error) {
         console.error('[v0] Error loading saved memes:', error);
       }
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 

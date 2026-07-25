@@ -2,7 +2,7 @@
 
 export function getLikes(): Record<string, boolean> {
   if (typeof window === 'undefined') return {};
-  const likes = localStorage.getItem('memopedia_likes');
+  const likes = localStorage.getItem('MemeOPedia_likes');
   return likes ? JSON.parse(likes) : {};
 }
 
@@ -14,7 +14,7 @@ export function saveLike(memeId: string, liked: boolean): void {
   } else {
     delete likes[memeId];
   }
-  localStorage.setItem('memopedia_likes', JSON.stringify(likes));
+  localStorage.setItem('MemeOPedia_likes', JSON.stringify(likes));
 }
 
 export function isLiked(memeId: string): boolean {
@@ -23,7 +23,7 @@ export function isLiked(memeId: string): boolean {
 
 export function getFavorites(): Record<string, boolean> {
   if (typeof window === 'undefined') return {};
-  const favorites = localStorage.getItem('memopedia_favorites');
+  const favorites = localStorage.getItem('MemeOPedia_favorites');
   return favorites ? JSON.parse(favorites) : {};
 }
 
@@ -35,7 +35,7 @@ export function saveFavorite(memeId: string, favorited: boolean): void {
   } else {
     delete favorites[memeId];
   }
-  localStorage.setItem('memopedia_favorites', JSON.stringify(favorites));
+  localStorage.setItem('MemeOPedia_favorites', JSON.stringify(favorites));
 }
 
 export function isFavorited(memeId: string): boolean {
