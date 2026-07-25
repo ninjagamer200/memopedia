@@ -20,7 +20,7 @@ export default function Page() {
               onClick={() => setShowSaved(true)}
               className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-lg transition-colors"
             >
-              💾 Saved
+              💾 Saved Memes
             </button>
           </div>
           <div className="pt-16">
